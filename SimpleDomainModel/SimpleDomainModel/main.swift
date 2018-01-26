@@ -1,4 +1,4 @@
-//
+    //
 //  main.swift
 //  SimpleDomainModel
 //
@@ -28,6 +28,43 @@ public struct Money {
   public var currency : String
   
   public func convert(_ to: String) -> Money {
+    if to == self.currency {
+        return self
+    }
+    switch (self.currency, to) {
+    case ("USD", "GBP"):
+        var newMoney = Money(amount: self.amount * 2, currency: "GBP")
+        return newMoney
+    case ("USD", "EUR"):
+        var newMoney = Money(amount: (3 * self.amount) / 2, currency: "EUR")
+        return newMoney
+    case ("USD", "CAN"):
+        var newMoney = Money(amount: (4 * self.amount) / 5, currency: "CAN")
+        return newMoney
+    case ("GBP", "USD"):
+        var newMoney = Money(amount: self.amount / 2, currency: "USD")
+        return newMoney
+    case ("EUR", "USD"):
+        var newMoney = Money(amount: (2 * self.amount) / 3, currency: "USD")
+        return newMoney
+    case ("CAN", "USD"):
+        var newMoney = Money(amount: (5 * self.amount) / 4, currency: "USD")
+        return newMoney
+    case ("EUR", "GBP"):
+        var newMoney = Money(amount: (3 * self.amount), currency: "GBP")
+        return newMoney
+    case ("GBP", "EUR"):
+        var newMoney = Money(amount: self.amount / 3, currency: "EUR")
+        return newMoney
+    case ("GBP", "CAN"):
+        var newMoney = Money(amount: (self.amount * 5) / 2, currency: "CAN")
+        return newMoney
+    case ("EUR", "CAN"):
+        var newMoney = Money(amount: (self.amount * 5) / 6, currency: "CAN")
+        return newMoney
+    default:
+        return self
+    }
   }
   
   public func add(_ to: Money) -> Money {
