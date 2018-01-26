@@ -62,6 +62,12 @@ public struct Money {
     case ("EUR", "CAN"):
         var newMoney = Money(amount: (self.amount * 5) / 6, currency: "CAN")
         return newMoney
+    case ("CAN", "GBP"):
+        var newMoney = Money(amount: (self.amount * 5) / 2, currency: "GBP")
+        return newMoney
+    case ("CAN", "EUR"):
+        var newMoney = money(amount: (self.amount * 6) / 5, currency: "EUR")
+        return newMoney
     default:
         return self
     }
