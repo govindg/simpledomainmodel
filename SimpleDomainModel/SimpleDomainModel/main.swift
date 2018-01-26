@@ -81,10 +81,10 @@ public struct Money {
     return Money(amount: self.amount + converted.amount, currency: self.currency)
   }
   public func subtract(_ from: Money) -> Money {
-    if (to.currency == self.currency) {
-        return Money(amount: self.amount - to.amount, currency: self.currency)
+    if (from.currency == self.currency) {
+        return Money(amount: self.amount - from.amount, currency: self.currency)
     }
-    let converted = to.convert(self.currency)
+    let converted = from.convert(self.currency)
     return Money(amount: self.amount - converted.amount, currency: self.currency)
   }
 }
