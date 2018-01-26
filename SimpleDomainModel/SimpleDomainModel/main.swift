@@ -66,7 +66,7 @@ public struct Money {
         var newMoney = Money(amount: (self.amount * 5) / 2, currency: "GBP")
         return newMoney
     case ("CAN", "EUR"):
-        var newMoney = money(amount: (self.amount * 6) / 5, currency: "EUR")
+        var newMoney = Money(amount: (self.amount * 6) / 5, currency: "EUR")
         return newMoney
     default:
         return self
@@ -74,8 +74,18 @@ public struct Money {
   }
   
   public func add(_ to: Money) -> Money {
+    if (to.currency == self.currency) {
+        return Money(amount: self.amount + to.amount, currency: self.currency)
+    }
+    let converted = to.convert(self.currency)
+    return Money(amount: self.amount + converted.amount, currency: self.currency)
   }
   public func subtract(_ from: Money) -> Money {
+    if (to.currency == self.currency) {
+        return Money(amount: self.amount - to.amount, currency: self.currency)
+    }
+    let converted = to.convert(self.currency)
+    return Money(amount: self.amount - converted.amount, currency: self.currency)
   }
 }
 
