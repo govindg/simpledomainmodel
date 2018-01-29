@@ -33,40 +33,40 @@ public struct Money {
     }
     switch (self.currency, to) {
     case ("USD", "GBP"):
-        var newMoney = Money(amount: self.amount * 2, currency: "GBP")
+        let newMoney = Money(amount: self.amount / 2, currency: "GBP")
         return newMoney
     case ("USD", "EUR"):
-        var newMoney = Money(amount: (3 * self.amount) / 2, currency: "EUR")
+        let newMoney = Money(amount: (3 * self.amount) / 2, currency: "EUR")
         return newMoney
     case ("USD", "CAN"):
-        var newMoney = Money(amount: (4 * self.amount) / 5, currency: "CAN")
+        let newMoney = Money(amount: (5 * self.amount) / 4, currency: "CAN")
         return newMoney
     case ("GBP", "USD"):
-        var newMoney = Money(amount: self.amount / 2, currency: "USD")
+        let newMoney = Money(amount: self.amount * 2, currency: "USD")
         return newMoney
     case ("EUR", "USD"):
-        var newMoney = Money(amount: (2 * self.amount) / 3, currency: "USD")
+        let newMoney = Money(amount: (2 * self.amount) / 3, currency: "USD")
         return newMoney
     case ("CAN", "USD"):
-        var newMoney = Money(amount: (5 * self.amount) / 4, currency: "USD")
+        let newMoney = Money(amount: (4 * self.amount) / 5, currency: "USD")
         return newMoney
     case ("EUR", "GBP"):
-        var newMoney = Money(amount: (3 * self.amount), currency: "GBP")
+        let newMoney = Money(amount: (3 * self.amount), currency: "GBP")
         return newMoney
     case ("GBP", "EUR"):
-        var newMoney = Money(amount: self.amount / 3, currency: "EUR")
+        let newMoney = Money(amount: self.amount / 3, currency: "EUR")
         return newMoney
     case ("GBP", "CAN"):
-        var newMoney = Money(amount: (self.amount * 5) / 2, currency: "CAN")
+        let newMoney = Money(amount: (self.amount * 5) / 2, currency: "CAN")
         return newMoney
     case ("EUR", "CAN"):
-        var newMoney = Money(amount: (self.amount * 5) / 6, currency: "CAN")
+        let newMoney = Money(amount: (self.amount * 5) / 6, currency: "CAN")
         return newMoney
     case ("CAN", "GBP"):
-        var newMoney = Money(amount: (self.amount * 5) / 2, currency: "GBP")
+        let newMoney = Money(amount: (self.amount * 5) / 2, currency: "GBP")
         return newMoney
     case ("CAN", "EUR"):
-        var newMoney = Money(amount: (self.amount * 6) / 5, currency: "EUR")
+        let newMoney = Money(amount: (self.amount * 6) / 5, currency: "EUR")
         return newMoney
     default:
         return self
@@ -74,18 +74,12 @@ public struct Money {
   }
   
   public func add(_ to: Money) -> Money {
-    if (to.currency == self.currency) {
-        return Money(amount: self.amount + to.amount, currency: self.currency)
-    }
-    let converted = to.convert(self.currency)
-    return Money(amount: self.amount + converted.amount, currency: self.currency)
+    let converted = self.convert(to.currency)
+    return Money(amount: to.amount + converted.amount, currency: to.currency)
   }
   public func subtract(_ from: Money) -> Money {
-    if (from.currency == self.currency) {
-        return Money(amount: self.amount - from.amount, currency: self.currency)
-    }
-    let converted = from.convert(self.currency)
-    return Money(amount: self.amount - converted.amount, currency: self.currency)
+    let converted = self.convert(from.currency)
+    return Money(amount: from.amount - converted.amount, currency: from.currency)
   }
 }
 
@@ -102,12 +96,26 @@ open class Job {
   }
   
   public init(title : String, type : JobType) {
+    self.title = title
+    self.type = type
   }
   
   open func calculateIncome(_ hours: Int) -> Int {
+    switch self.type {
+    case .Hourly(let h):
+        return Int(h * Double(hours))
+    case .Salary(let sal):
+        return sal
+    }
   }
   
   open func raise(_ amt : Double) {
+    switch self.type {
+    case .Hourly(let h):
+        self.type = .Hourly(h + amt)
+    case .Salary(let sal):
+        self.type = .Salary(sal + Int(amt))
+    }
   }
 }
 
@@ -121,15 +129,29 @@ open class Person {
 
   fileprivate var _job : Job? = nil
   open var job : Job? {
-    get { }
+    get {
+        return self._job
+    }
     set(value) {
+        if self.age <= 21 {
+            self._job = nil
+        } else {
+            self._job = value
+        }
     }
   }
   
   fileprivate var _spouse : Person? = nil
   open var spouse : Person? {
-    get { }
+    get {
+        return self._spouse
+    }
     set(value) {
+        if (age <= 21) {
+            self._spouse = nil
+        } else {
+            self._spouse = value
+        }
     }
   }
   
@@ -140,6 +162,7 @@ open class Person {
   }
   
   open func toString() -> String {
+    return "[Person: firstName:\(self.firstName) lastName:\(self.lastName) age:\(self.age) job:\(self.job) spouse:\(self.spouse)]"
   }
 }
 
@@ -150,12 +173,31 @@ open class Family {
   fileprivate var members : [Person] = []
   
   public init(spouse1: Person, spouse2: Person) {
+    if spouse1.spouse != nil || spouse2.spouse != nil {
+        return
+    }
+    spouse1.spouse = spouse2
+    spouse2.spouse = spouse1
+    members.append(spouse1)
+    members.append(spouse2)
   }
   
   open func haveChild(_ child: Person) -> Bool {
+    if members[0].age > 21 || members[1].age > 21 {
+        members.append(child)
+        return true
+    }
+    return false
   }
   
   open func householdIncome() -> Int {
+    var totalIncome : Int = 0
+    for m in members {
+        if m.job != nil {
+            totalIncome += (m.job?.calculateIncome(2000))!
+        }
+    }
+    return totalIncome
   }
 }
 
